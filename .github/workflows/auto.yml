@@ -1,33 +1,75 @@
-name: Auto
+name: Dify Sequential Automation # 修改工作流名称，使其更具描述性
 
 on:
   schedule:
-    - cron: "17 02 * * *" # 北京时间上午06:30
-  workflow_dispatch:
+    # 北京时间上午06:30 对应 UTC 时间的 22:30 （前一天）
+    # cron 表达式为：分钟 小时 天 月 星期
+    # '30 22 * * *' 表示每天 UTC 时间 22:30 运行
+    - cron: "30 22 * * *" 
+  workflow_dispatch: # 保留手动触发选项
 
-env:
-  DIFY_TOKENS: ${{ secrets.DIFY_TOKENS }}
-  DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL }}
-  DIFY_INPUTS: ${{ secrets.DIFY_INPUTS }}
-  EMAIL_USER: ${{ secrets.EMAIL_USER }}
-  EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-  EMAIL_TO: ${{ secrets.EMAIL_TO }}
-  DINGDING_WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
-  PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
-  WEIXIN_WEBHOOK: ${{ secrets.WEIXIN_WEBHOOK }}
-  SERVERPUSHKEY: ${{ secrets.SERVERPUSHKEY }}
-  FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
-  AIBOTK_KEY: ${{ secrets.AIBOTK_KEY }}
-  AIBOTK_ROOM_RECIVER: ${{ secrets.AIBOTK_ROOM_RECIVER }}
-  AIBOTK_CONTACT_RECIVER: ${{ secrets.AIBOTK_CONTACT_RECIVER }}
+# 移除全局 Dify 相关的环境变量，改为在每个 Job 内部配置
+# 保留全局 env 为空或仅放置真正全局通用的变量
 
 jobs:
-  DifyWorkflow:
+  # === 第一个 Dify 任务 Job ===
+  DifyWorkflow_Instance1:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
-      - name: Run Project
+
+      - name: Run Dify Workflow for Instance 1
+        env:
+          # 使用为第一个 Dify 实例配置的 Secrets
+          DIFY_TOKENS: ${{ secrets.DIFY_TOKENS_1 }}
+          DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL_1 }}
+          DIFY_INPUTS: ${{ secrets.DIFY_INPUTS_1 }} # 如果不需要，此行可省略或留空
+          
+          # 通知相关的 Secrets (每个 Dify 任务运行后都会尝试发送通知)
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          DINGDING_WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          WEIXIN_WEBHOOK: ${{ secrets.WEIXIN_WEBHOOK }}
+          SERVERPUSHKEY: ${{ secrets.SERVERPUSHKEY }}
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          AIBOTK_KEY: ${{ secrets.AIBOTK_KEY }}
+          AIBOTK_ROOM_RECIVER: ${{ secrets.AIBOTK_ROOM_RECIVER }}
+          AIBOTK_CONTACT_RECIVER: ${{ secrets.AIBOTK_CONTACT_RECIVER }}
         run: |
           yarn
-          yarn workflowDify
+          yarn workflowDify # 执行你的自动化脚本
+
+  # === 第二个 Dify 任务 Job ===
+  DifyWorkflow_Instance2:
+    # 这一行至关重要：确保此 Job 在 DifyWorkflow_Instance1 成功完成后才开始
+    needs: DifyWorkflow_Instance1 
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+
+      - name: Run Dify Workflow for Instance 2
+        env:
+          # 使用为第二个 Dify 实例配置的 Secrets
+          DIFY_TOKENS: ${{ secrets.DIFY_TOKENS_2 }}
+          DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL_2 }}
+          DIFY_INPUTS: ${{ secrets.DIFY_INPUTS_2 }} # 如果不需要，此行可省略或留空
+
+          # 通知相关的 Secrets (每个 Dify 任务运行后都会尝试发送通知)
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          DINGDING_WEBHOOK: ${{ secrets.DINGDING_WEBHOOK }}
+          PUSHPLUS_TOKEN: ${{ secrets.PUSHPLUS_TOKEN }}
+          WEIXIN_WEBHOOK: ${{ secrets.WEIXIN_WEBHOOK }}
+          SERVERPUSHKEY: ${{ secrets.SERVERPUSHKEY }}
+          FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          AIBOTK_KEY: ${{ secrets.AIBOTK_KEY }}
+          AIBOTK_ROOM_RECIVER: ${{ secrets.AIBOTK_ROOM_RECIVER }}
+          AIBOTK_CONTACT_RECIVER: ${{ secrets.AIBOTK_CONTACT_RECIVER }}
+        run: |
+          yarn
+          yarn workflowDify # 执行你的自动化脚本
