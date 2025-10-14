@@ -1,4 +1,4 @@
-name: Dify Sequential Automation # 修改工作流名称，使其更具描述性
+name: Dify Sequential Automation Debug# 修改工作流名称，使其更具描述性
 
 on:
   schedule:
