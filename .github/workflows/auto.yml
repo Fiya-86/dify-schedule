@@ -24,7 +24,7 @@ jobs:
           # 使用为第一个 Dify 实例配置的 Secrets
           DIFY_TOKENS: ${{ secrets.DIFY_TOKENS_1 }}
           DIFY_BASE_URL: ${{ secrets.DIFY_BASE_URL_1 }}
-          DIFY_INPUTS: ${{ secrets.DIFY_INPUTS_1 }} # 如果不需要，此行可省略或留空
+          DIFY_INPUTS: ${{ secrets.DIFY_INPUTS_DEBUG }} # 如果不需要，此行可省略或留空
           
           # 通知相关的 Secrets (每个 Dify 任务运行后都会尝试发送通知)
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
