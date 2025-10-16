@@ -1,11 +1,11 @@
 name: Dify Sequential Automation # 修改工作流名称，使其更具描述性
 
 on:
-  schedule:
+  # schedule:
     # 北京时间上午06:30 对应 UTC 时间的 22:30 （前一天）
     # cron 表达式为：分钟 小时 天 月 星期
     # '30 22 * * *' 表示每天 UTC 时间 22:30 运行
-    - cron: "30 22 * * *" 
+    # - cron: "30 22 * * *" 
   workflow_dispatch: # 保留手动触发选项
 
 # 移除全局 Dify 相关的环境变量，改为在每个 Job 内部配置
